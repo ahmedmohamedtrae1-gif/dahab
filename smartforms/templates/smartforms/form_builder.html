@@ -1,0 +1,60 @@
+{% extends 'smartforms/base.html' %}
+{% block title %}{% if form_obj %}تعديل {{ form_obj.title }}{% else %}فورم جديد{% endif %}{% endblock %}
+{% block content %}
+<main class="admin-shell">
+    <nav class="admin-nav">
+        <div><a href="{% url 'dashboard' %}" class="back-link">← الداشبورد</a><h1>{% if form_obj %}تعديل الفورم{% else %}إنشاء فورم جديد{% endif %}</h1></div>
+        {% if form_obj %}<a class="secondary-btn" href="{{ form_obj.get_absolute_url }}" target="_blank">معاينة الفورم</a>{% endif %}
+    </nav>
+
+    {% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
+
+    <form method="post" class="builder-layout">
+        {% csrf_token %}
+        <section class="panel builder-main">
+            <div class="panel-head"><h2>بيانات الفورم</h2><p>لو سيبت اللينك فاضي هيتعمل لينك عشوائي أو مناسب للاسم تلقائيًا.</p></div>
+            <div class="fields-grid two">
+                {% for field in builder_form %}
+                    <div class="field-wrap {% if field.name == 'description' or field.name == 'success_message' or field.name == 'note' %}wide{% endif %}">
+                        <label>{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                        {% for error in field.errors %}<small class="error-text">{{ error }}</small>{% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if form_obj %}
+        <section class="panel builder-main">
+            <div class="panel-head builder-head">
+                <div><h2>أسئلة الفورم</h2><p>رتب الأسئلة بالأرقام، واكتب اختيارات السؤال كل اختيار في سطر.</p></div>
+                <a href="{% url 'dashboard_field_add' form_obj.pk %}" class="secondary-btn">+ إضافة سؤال</a>
+            </div>
+            {{ formset.management_form }}
+            <div class="field-editor-list">
+                {% for f in formset %}
+                    <article class="field-editor">
+                        {{ f.id }}
+                        <div class="drag-dot">⋮⋮</div>
+                        <div class="fields-grid editor-grid">
+                            {% for field in f.visible_fields %}
+                                <div class="field-wrap {% if field.name == 'choices' %}wide{% endif %}">
+                                    <label>{{ field.label }}</label>
+                                    {{ field }}
+                                    {% for error in field.errors %}<small class="error-text">{{ error }}</small>{% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="empty-box">اضغط “إضافة سؤال” عشان تبدأ بناء الفورم.</div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <button class="primary-btn sticky-save" type="submit">حفظ التعديلات</button>
+    </form>
+</main>
+{% endblock %}

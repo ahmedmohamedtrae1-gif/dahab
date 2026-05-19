@@ -1,0 +1,46 @@
+{% extends 'smartforms/base.html' %}
+{% block title %}{{ form_obj.title }}{% endblock %}
+{% block content %}
+<main class="public-shell">
+    <section class="hero-card">
+        <div class="badge">فورم تسجيل</div>
+        <h1>{{ form_obj.title }}</h1>
+        {% if form_obj.description %}<p>{{ form_obj.description }}</p>{% endif %}
+    </section>
+
+    <form method="post" class="form-card" novalidate>
+        {% csrf_token %}
+        {% if public_form.non_field_errors %}
+            <div class="alert error">{{ public_form.non_field_errors }}</div>
+        {% endif %}
+        <div class="fields-grid">
+            {% for field in public_form %}
+                {% if field.field.form_field_obj.field_type == 'companions' %}
+                    <div class="field-wrap wide">
+                        <label>{{ field.label }}{% if field.field.required %}<span>*</span>{% endif %}</label>
+                        {{ field }}
+                        <div class="panel companions-shell">
+                            <div class="companions-head">
+                                <strong>بيانات المرافقين</strong>
+                                <button type="button" class="secondary-btn companions-add" data-companions-for="{{ field.name }}">+ إضافة مرافق</button>
+                            </div>
+                            <div class="companions-list" data-companions-list="{{ field.name }}"></div>
+                            {% if field.help_text %}<small class="companions-help">{{ field.help_text }}</small>{% endif %}
+                            {% for error in field.errors %}<small class="error-text companions-error">{{ error }}</small>{% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="field-wrap {% if field.field.widget.input_type == 'checkbox' %}check-wrap{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span>*</span>{% endif %}</label>
+                        {{ field }}
+                        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                        {% for error in field.errors %}<small class="error-text">{{ error }}</small>{% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% if form_obj.note %}<div class="note">{{ form_obj.note }}</div>{% endif %}
+        <button class="primary-btn" type="submit">{{ form_obj.submit_button_text }}</button>
+    </form>
+</main>
+{% endblock %}

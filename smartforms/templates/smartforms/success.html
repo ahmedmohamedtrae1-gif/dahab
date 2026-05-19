@@ -1,0 +1,12 @@
+{% extends 'smartforms/base.html' %}
+{% block title %}تم الإرسال{% endblock %}
+{% block content %}
+<main class="public-shell success-shell">
+    <section class="success-card">
+        <div class="success-icon">✓</div>
+        <h1>تم الإرسال</h1>
+        <p>{{ form_obj.success_message }}</p>
+        <a href="{{ form_obj.get_absolute_url }}" class="secondary-btn">تسجيل رد جديد</a>
+    </section>
+</main>
+{% endblock %}

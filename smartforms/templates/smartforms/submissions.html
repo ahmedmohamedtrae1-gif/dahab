@@ -1,0 +1,51 @@
+{% extends 'smartforms/base.html' %}
+{% block title %}ردود {{ form_obj.title }}{% endblock %}
+{% block content %}
+<main class="admin-shell submissions-page">
+    <nav class="admin-nav">
+        <div><a href="{% url 'dashboard' %}" class="back-link">← الداشبورد</a><h1>ردود: {{ form_obj.title }}</h1></div>
+        <div class="nav-actions"><a class="secondary-btn" href="{% url 'dashboard_export_csv' form_obj.pk %}">تحميل CSV</a><a class="primary-btn" href="{% url 'dashboard_form_edit' form_obj.pk %}">تعديل الفورم</a></div>
+    </nav>
+    {% if messages %}
+        {% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}
+    {% endif %}
+    <section class="panel submissions-tools">
+        <div class="submissions-tools-left">
+            <span class="submissions-chip">إجمالي الردود: {{ submissions|length }}</span>
+            <a class="secondary-btn" href="{% url 'dashboard_export_csv' form_obj.pk %}">تصدير CSV</a>
+        </div>
+        <div class="submissions-tools-right">
+            <input class="input submissions-search" type="search" placeholder="ابحث داخل الردود..." data-submissions-search>
+        </div>
+    </section>
+    <section class="panel submissions-cards">
+        <div class="cards-list">
+        {% for submission in submissions %}
+            <article class="submission-card" data-submission-card>
+                <div class="submission-head">
+                    <div class="submission-head-main">
+                        <div class="submission-title">
+                            <strong>رد #{{ submission.id }}</strong>
+                            <span class="submissions-chip">{{ submission.created_at|date:'Y-m-d H:i' }}</span>
+                            {% if submission.ip_address %}<span class="submissions-chip muted">IP: {{ submission.ip_address }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <form method="post" action="{% url 'dashboard_submission_delete' form_obj.pk submission.id %}" style="display:inline" onsubmit="return confirm('متأكد إنك عايز تحذف الرد ده؟');">
+                        {% csrf_token %}
+                        <button type="submit" class="secondary-btn submissions-danger">حذف</button>
+                    </form>
+                </div>
+                <div class="answer-grid">
+                    {% for answer in submission.answers.all %}
+                    <div class="answer-item">
+                        <span>{{ answer.field_label }}</span>
+                        <strong class="answer-value" data-answer-value data-answer-label="{{ answer.field_label }}">{{ answer.value }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+            </article>
+        {% empty %}<div class="empty-box">لسه مفيش ردود على الفورم ده.</div>{% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}

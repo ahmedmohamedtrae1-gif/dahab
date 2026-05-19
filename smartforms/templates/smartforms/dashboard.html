@@ -1,0 +1,97 @@
+{% extends 'smartforms/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<main class="admin-shell">
+    <nav class="admin-nav">
+        <div>
+            <span class="badge">Admin</span>
+            <h1>لوحة تحكم الفورمز</h1>
+        </div>
+        <div class="nav-actions">
+            <a class="secondary-btn" href="{{ admin_links.index }}">Django Admin</a>
+            <a class="primary-btn" href="{% url 'dashboard_form_create' %}">+ فورم جديد</a>
+        </div>
+    </nav>
+
+    {% if messages %}
+        {% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}
+    {% endif %}
+
+    <section class="stats-grid">
+        <div class="stat-card"><span>كل الفورمز</span><strong>{{ stats.forms_count }}</strong></div>
+        <div class="stat-card"><span>فورمز مفعلة</span><strong>{{ stats.active_forms_count }}</strong></div>
+        <div class="stat-card"><span>إجمالي الردود</span><strong>{{ stats.submissions_count }}</strong></div>
+        <div class="stat-card"><span>إجمالي الأسئلة</span><strong>{{ stats.fields_count }}</strong></div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <h2>إدارة السيستم</h2>
+            <p>صلاحيات كاملة من خلال Django Admin، مع روابط سريعة.</p>
+        </div>
+        <div class="nav-actions">
+            <a class="secondary-btn" href="{{ admin_links.users }}">المستخدمين</a>
+            <a class="secondary-btn" href="{{ admin_links.forms }}">الفورمز</a>
+            <a class="secondary-btn" href="{{ admin_links.fields }}">الأسئلة</a>
+            <a class="secondary-btn" href="{{ admin_links.submissions }}">الردود</a>
+            <a class="secondary-btn" href="{% url 'dashboard_export_backup' %}">تحميل Backup JSON</a>
+            <form method="post" action="{% url 'dashboard_import_backup' %}" enctype="multipart/form-data" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center" onsubmit="return confirm('الاستيراد هيعمل Reset كامل للداتابيز (هيتم مسح البيانات الحالية) وبعدين يحمّل النسخة. متأكد؟');">
+                {% csrf_token %}
+                <input class="input" type="file" name="backup_json" accept="application/json,.json" required style="max-width:320px">
+                <button type="submit" class="secondary-btn" style="border-color:#fecaca;color:#991b1b">استيراد Backup</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <h2>الفورمز</h2>
+            <p>كل فورم له لينك مستقل. تقدر تختار Slug مخصص أو تسيبه يتولد تلقائيًا.</p>
+        </div>
+        <div class="responsive-table">
+            <table>
+                <thead><tr><th>الفورم</th><th>الحالة</th><th>اللينك</th><th>الردود</th><th>إدارة</th></tr></thead>
+                <tbody>
+                {% for form in forms %}
+                    <tr>
+                        <td><strong>{{ form.title }}</strong><br><small>{{ form.description|truncatechars:80 }}</small></td>
+                        <td>{% if form.is_active %}<span class="pill on">مفعل</span>{% else %}<span class="pill off">مغلق</span>{% endif %}</td>
+                        <td><a href="{{ form.get_absolute_url }}" target="_blank">/f/{{ form.slug }}/</a></td>
+                        <td>{{ form.total_submissions }}</td>
+                        <td class="actions-cell">
+                            <a href="{% url 'dashboard_form_edit' form.pk %}">تعديل</a>
+                            <a href="{% url 'dashboard_submissions' form.pk %}">الردود</a>
+                            <a href="{% url 'dashboard_export_csv' form.pk %}">CSV</a>
+                            <form method="post" action="{% url 'dashboard_form_toggle' form.pk %}" style="display:inline">
+                                {% csrf_token %}
+                                <button type="submit" class="secondary-btn">{% if form.is_active %}إيقاف{% else %}تفعيل{% endif %}</button>
+                            </form>
+                            <form method="post" action="{% url 'dashboard_form_delete' form.pk %}" style="display:inline" onsubmit="return confirm('متأكد إنك عايز تحذف الفورم؟ هيتحذف معاه كل الردود.');">
+                                {% csrf_token %}
+                                <button type="submit" class="secondary-btn" style="border-color:#fecaca;color:#991b1b">حذف</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5">لسه مفيش فورمز.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head"><h2>آخر الردود</h2></div>
+        <div class="cards-list">
+        {% for submission in latest_submissions %}
+            <article class="submission-mini">
+                <div><strong>{{ submission.form.title }}</strong><small>{{ submission.created_at|date:'Y-m-d H:i' }}</small></div>
+                <div class="mini-answers">
+                    {% for answer in submission.answers.all|slice:':4' %}<span>{{ answer.field_label }}: {{ answer.value }}</span>{% endfor %}
+                </div>
+            </article>
+        {% empty %}<p>لسه مفيش ردود.</p>{% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}

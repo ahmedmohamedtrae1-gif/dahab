@@ -20,8 +20,11 @@ if raw_allowed_hosts:
 railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN', '').strip()
 if railway_domain:
     ALLOWED_HOSTS.append(railway_domain)
+ALLOWED_HOSTS.append('forms.edutech-egy.com')
 if not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+if IS_RAILWAY and not raw_allowed_hosts and not railway_domain:
+    ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -80,6 +83,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+try:
+    os.makedirs(STATIC_ROOT, exist_ok=True)
+except Exception:
+    pass
 STORAGES = {
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
@@ -95,6 +102,7 @@ if raw_csrf:
     CSRF_TRUSTED_ORIGINS.extend([o.strip() for o in raw_csrf.split(',') if o.strip()])
 if railway_domain:
     CSRF_TRUSTED_ORIGINS.append(f'https://{railway_domain}')
+CSRF_TRUSTED_ORIGINS.append('https://forms.edutech-egy.com')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = not DEBUG

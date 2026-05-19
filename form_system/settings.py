@@ -89,7 +89,7 @@ except Exception:
     pass
 STORAGES = {
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
     },
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

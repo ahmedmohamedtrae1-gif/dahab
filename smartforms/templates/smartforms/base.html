@@ -11,8 +11,8 @@
     {% else %}
         <meta name="robots" content="index,follow">
     {% endif %}
-    <link rel="icon" href="{% static 'smartforms/favicon.svg' %}" type="image/svg+xml">
-    <link rel="shortcut icon" href="{% static 'smartforms/favicon.svg' %}" type="image/svg+xml">
+    <link rel="icon" href="/static/smartforms/favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="/static/smartforms/favicon.svg" type="image/svg+xml">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{% block og_title %}Smart Forms{% endblock %}">
     <meta property="og:description" content="{% block og_description %}نظام فورمز عربي لحجز رحلات دهب مع دعم المرافقين ولوحة تحكم للمدير.{% endblock %}">
@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'smartforms/css/styles.css' %}">
+    <link rel="stylesheet" href="/static/smartforms/css/styles.css">
     <script>
         (function () {
             var stored = null;
@@ -160,6 +160,6 @@
         <span class="theme-label">وضع داكن</span>
     </button>
     {% block content %}{% endblock %}
-    <script src="{% static 'smartforms/js/app.js' %}"></script>
+    <script src="/static/smartforms/js/app.js"></script>
 </body>
 </html>

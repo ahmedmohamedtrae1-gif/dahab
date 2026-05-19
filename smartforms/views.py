@@ -52,6 +52,32 @@ def home(request):
         return redirect(first_form.get_absolute_url())
     return render(request, 'smartforms/empty_home.html')
 
+def robots_txt(request):
+    base = f'{request.scheme}://{request.get_host()}'
+    content = '\n'.join([
+        'User-agent: *',
+        'Disallow: /admin/',
+        'Disallow: /dashboard/',
+        f'Sitemap: {base}/sitemap.xml',
+        '',
+    ])
+    return HttpResponse(content, content_type='text/plain; charset=utf-8')
+
+def sitemap_xml(request):
+    base = f'{request.scheme}://{request.get_host()}'
+    urls = [(f'{base}/', None)]
+    for form_obj in DynamicForm.objects.filter(is_active=True).only('slug', 'updated_at'):
+        urls.append((f'{base}{form_obj.get_absolute_url()}', form_obj.updated_at))
+    parts = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, lastmod in urls:
+        parts.append('<url>')
+        parts.append(f'<loc>{loc}</loc>')
+        if lastmod:
+            parts.append(f'<lastmod>{lastmod.date().isoformat()}</lastmod>')
+        parts.append('</url>')
+    parts.append('</urlset>')
+    return HttpResponse('\n'.join(parts), content_type='application/xml; charset=utf-8')
+
 def admin_changelist_url(model):
     return reverse(f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist")
 

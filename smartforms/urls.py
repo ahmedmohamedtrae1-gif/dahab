@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('robots.txt', views.robots_txt, name='robots_txt'),
+    path('sitemap.xml', views.sitemap_xml, name='sitemap_xml'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('dashboard/backup/export.json', views.export_backup_json, name='dashboard_export_backup'),
     path('dashboard/backup/import.json', views.import_backup_json, name='dashboard_import_backup'),

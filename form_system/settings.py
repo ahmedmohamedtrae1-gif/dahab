@@ -70,8 +70,6 @@ DATABASES = {
         conn_max_age=int(os.getenv('CONN_MAX_AGE', '60')),
     )
 }
-if IS_RAILWAY and not os.getenv('DATABASE_URL', '').strip():
-    raise RuntimeError('Missing DATABASE_URL environment variable (Railway database not configured)')
 
 AUTH_PASSWORD_VALIDATORS = []
 

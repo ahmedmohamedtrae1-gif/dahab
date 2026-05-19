@@ -5,6 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Smart Forms{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}نظام فورمز عربي لحجز رحلات دهب مع دعم المرافقين ولوحة تحكم للمدير.{% endblock %}">
+    {% if request and request.path|slice:":10" == "/dashboard" %}
+        <meta name="robots" content="noindex,nofollow">
+    {% else %}
+        <meta name="robots" content="index,follow">
+    {% endif %}
+    <link rel="icon" href="{% static 'smartforms/favicon.svg' %}" type="image/svg+xml">
+    <link rel="shortcut icon" href="{% static 'smartforms/favicon.svg' %}" type="image/svg+xml">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}Smart Forms{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}نظام فورمز عربي لحجز رحلات دهب مع دعم المرافقين ولوحة تحكم للمدير.{% endblock %}">
+    {% if request %}<meta property="og:url" content="{{ request.build_absolute_uri }}">{% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">

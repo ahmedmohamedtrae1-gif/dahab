@@ -21,6 +21,7 @@ railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN', '').strip()
 if railway_domain:
     ALLOWED_HOSTS.append(railway_domain)
 ALLOWED_HOSTS.append('forms.edutech-egy.com')
+ALLOWED_HOSTS.append('dahab.up.railway.app')
 if not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 if IS_RAILWAY and not raw_allowed_hosts and not railway_domain:
@@ -105,6 +106,7 @@ if raw_csrf:
 if railway_domain:
     CSRF_TRUSTED_ORIGINS.append(f'https://{railway_domain}')
 CSRF_TRUSTED_ORIGINS.append('https://forms.edutech-egy.com')
+CSRF_TRUSTED_ORIGINS.append('https://dahab.up.railway.app')
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = not DEBUG
